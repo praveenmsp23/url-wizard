@@ -1,0 +1,51 @@
+{
+  "version": "1.0.0",
+  "name": "url-wizard",
+  "description": "A wizard who can encode and decode website urls and rewrite them.",
+  "keywords": [
+    "url",
+    "encode",
+    "decode",
+    "attack"
+  ],
+  "license": "MIT",
+  "author": "Praveen M <praveenmsp23@gmail.com>",
+  "homepage": "https://praveenmsp.com/url-wizard",
+  "bugs": {
+    "url": "https://github.com/praveenmsp23/url-wizard/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/praveenmsp23/url-wizard.git"
+  },
+  "scripts": {
+    "clean": "rimraf build",
+    "build": "pnpm clean && webpack --mode production",
+    "start": "webpack serve --mode development"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.0.268",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "autoprefixer": "^10.4.19",
+    "copy-webpack-plugin": "^12.0.2",
+    "css-loader": "^7.1.2",
+    "html-webpack-plugin": "^5.6.0",
+    "mini-css-extract-plugin": "^2.9.0",
+    "postcss": "^8.4.39",
+    "postcss-loader": "^8.1.1",
+    "rimraf": "^5.0.7",
+    "style-loader": "^4.0.0",
+    "tailwindcss": "^3.4.4",
+    "ts-loader": "^9.5.1",
+    "typescript": "^5.5.2",
+    "webpack": "^5.92.1",
+    "webpack-cli": "^5.1.4",
+    "webpack-dev-server": "^5.0.4"
+  },
+  "packageManager": "pnpm@9.4.0"
+}
