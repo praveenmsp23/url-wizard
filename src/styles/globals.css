@@ -1,3 +1,37 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+body {
+  @apply max-h-[520px] w-[520px] bg-black text-white font-medium font-montserrat antialiased;
+}
+
+button {
+  @apply border-2 border-white px-2 py-1 transition-all rounded-md duration-500 hover:bg-white hover:text-black;
+}
+
+textarea {
+  @apply px-1 border-2 bg-black border-gray-200 rounded-md text-sm placeholder:text-sm;
+}
+
+h1 {
+  @apply text-sm font-semibold;
+}
+
+label {
+  @apply text-sm;
+}
+
+textarea:focus,
+input:focus {
+  outline: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
