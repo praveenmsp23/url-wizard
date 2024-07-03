@@ -5,21 +5,55 @@ interface QueryParams {
   value: string;
 }
 
+interface StateMessage {
+  error: boolean;
+  message: string;
+}
+
 const HomePage: React.FC = () => {
-  const [url, setUrl] = useState<URL>();
+  const [url, setUrl] = useState<string>();
+  const [urlInfo, setUrlInfo] = useState<URL>();
+  const [copied, setCopied] = useState<boolean>(false);
+  const [message, setMessage] = useState<StateMessage>();
+  const [params, setParams] = useState<Map<string, string>>(new Map());
+
+  const handleCopy = () => {
+    if (url) {
+      navigator.clipboard.writeText(url);
+      setCopied(true);
+
+      setTimeout(() => {
+        setCopied(false);
+      }, 3000);
+    }
+  };
+
+  useEffect(() => {
+    if (url) {
+      try {
+        setMessage(undefined);
+        setUrlInfo(new URL(url));
+      } catch (error) {
+        setMessage({ error: true, message: "Invalid URL" });
+      }
+    }
+  }, [url]);
+
+  useEffect(() => {
+    if (urlInfo) {
+      let p = new Map();
+      for (let entry of urlInfo.searchParams.entries()) {
+        p.set(entry[0], entry[1]);
+        setParams(p);
+      }
+    }
+  }, [urlInfo]);
 
   useEffect(() => {
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-      setUrl(new URL(tabs[0].url ?? ""));
+      setUrl(tabs[0].url);
     });
   }, []);
-
-  if (!url) return;
-
-  const params: QueryParams[] = [];
-  for (let entry of url.searchParams.entries()) {
-    params.push({ key: entry[0], value: entry[1] });
-  }
 
   return (
     <div>
@@ -27,42 +61,83 @@ const HomePage: React.FC = () => {
         <h1 className="text-lg font-semibold">URL Wizard</h1>
       </header>
       <main className="p-2 space-y-2">
-        <textarea
-          rows={3}
-          className="w-full"
-          placeholder="Website url goes here..."
-          defaultValue={url.href}
-          onChange={(e) => setUrl(new URL(e.target.value))}
-        />
         <div>
-          <h1 className="font-semibold text-sm mb-1 underline underline-offset-2">
-            Detailed Info
-          </h1>
-          <div className="flex items-center gap-2 mb-1">
-            <label>Hostname:</label>
-            <h1>{url.host}</h1>
-          </div>
-          <div className="flex items-center gap-2 mb-1">
-            <label>Path:</label>
-            <h1>{url.pathname}</h1>
-          </div>
-          {params.length > 0 && (
-            <div>
-              <h1 className="font-semibold text-sm mt-2 mb-1 underline underline-offset-2">
-                Query params
-              </h1>
-              {params.map((p, i) => (
-                <div
-                  key={`query-param-${i}`}
-                  className="flex gap-2 overflow-scroll"
-                >
-                  <label>{p.key}:</label>
-                  <h1 className="whitespace-normal">{p.value}</h1>
-                </div>
-              ))}
-            </div>
+          <textarea
+            rows={3}
+            className="w-full"
+            placeholder="Your website url goes here..."
+            value={url}
+            onChange={(e) => setUrl(e.target.value)}
+          />
+          {message && (
+            <p
+              className={`${message.error ? "text-red-600" : "text-gray-200"}`}
+            >
+              {message.message}
+            </p>
           )}
         </div>
+        <div className="flex gap-2">
+          <button
+            disabled={!url}
+            onClick={() => {
+              if (url) setUrl(encodeURIComponent(url));
+            }}
+          >
+            Encode
+          </button>
+          <button
+            disabled={!url}
+            onClick={() => {
+              if (url) setUrl(decodeURIComponent(url));
+            }}
+          >
+            Decode
+          </button>
+          <button
+            disabled={!url}
+            onClick={() => {
+              setUrl("");
+              setUrlInfo(undefined);
+            }}
+          >
+            Clear
+          </button>
+          <button disabled={!url} onClick={handleCopy}>
+            {copied ? "Copied" : "Copy"}
+          </button>
+        </div>
+        {urlInfo && (
+          <div>
+            <h1 className="font-semibold text-sm mb-1 underline underline-offset-2">
+              Detailed Info
+            </h1>
+            <div className="flex items-center gap-2 mb-1">
+              <label>Hostname:</label>
+              <h1>{urlInfo.host}</h1>
+            </div>
+            <div className="flex items-center gap-2 mb-1">
+              <label>Path:</label>
+              <h1>{urlInfo.pathname}</h1>
+            </div>
+            {params.size > 0 && (
+              <div>
+                <h1 className="font-semibold text-sm mt-2 mb-1 underline underline-offset-2">
+                  Query params
+                </h1>
+                {Array.from(params.entries()).map(([key, value], i) => (
+                  <div
+                    key={`query-param-${i}`}
+                    className="flex gap-2 overflow-scroll"
+                  >
+                    <label>{key}:</label>
+                    <h1 className="whitespace-normal">{value}</h1>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
       </main>
     </div>
   );
