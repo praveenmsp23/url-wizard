@@ -6,15 +6,6 @@
   "action": {
     "default_popup": "index.html"
   },
-  "background": {
-    "service_worker": "background.js"
-  },
-  "content_scripts": [
-    {
-      "js": ["content.js"],
-      "matches": ["<all_urls>"]
-    }
-  ],
   "permissions": ["tabs", "activeTab"],
   "icons": {
     "16": "images/icon-16.png",
